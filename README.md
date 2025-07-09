@@ -13,6 +13,8 @@ It can check the NSW and QLD ARBs at the moment, but there's potential to add mo
 ✨them and fix them!                      ✨
 ✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨
 ```
+## Who's it for?
+If you're a NSW or QLD architecture practice, then you'll need to keep track of how your people represent themselves on the internet. This can help by checking the registration status of all the registrations that people hold (as long as it's in the list of bodies that this checks, which is only NSW and QLD's ARBs at the moment)
 
 ## Installation
 
