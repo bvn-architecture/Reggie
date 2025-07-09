@@ -7,9 +7,13 @@ name = "arch-reggie"
 version = "0.1.0"
 description = "A package for checking professional registration status across various certification bodies"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = "MIT"
+license-files = [
+    "LICENSE",
+]
+keywords = ["NSW", "QLD", "architecture", "registration", "BVN"]
 authors = [
-    {name = "Your Name", email = "your.email@example.com"},
+    {name = "Ben Doherty", email = "ben_doherty@bvn.com.au"},
 ]
 classifiers = [
     "Development Status :: 4 - Beta",

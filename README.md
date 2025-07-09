@@ -4,6 +4,8 @@ A Python package for checking professional registration status across various ce
 
 It can check the NSW and QLD ARBs at the moment, but there's potential to add more in the future.
 
+![A slow loris, looking at you](docs/slow_lorris.png)
+
 ## Installation
 
 ```bash
@@ -18,12 +20,23 @@ from reggie import RegistrationProcessor, ProcessingConfig
 # Initialize with default configuration
 processor = RegistrationProcessor()
 
-# Process a CSV file
+# Process a CSV file - default expects columns: Email, Full Name, LinkedIn URL, State Board Name, Registration Number, State Board Code
 results = processor.process_csv("path/to/your/registrations.csv")
 
 # Save results as JSON
 processor.save_json(results, "output.json")
 ```
+
+## CSV Format
+
+The default configuration expects a headerless CSV with these columns in order:
+
+1. Email
+2. Full Name
+3. LinkedIn URL
+4. State Board Name (e.g., "NSW Architects Registration Board")
+5. Registration Number
+6. State Board Code (e.g., "NSW", "QLD")
 
 ## Supported Registration Bodies
 
@@ -35,23 +48,22 @@ processor.save_json(results, "output.json")
 
 ## Configuration
 
-The package supports flexible configuration for column mappings and processing options:
+The package works out-of-the-box with the standard CSV format, but supports custom configuration:
 
 ```python
 from reggie import RegistrationProcessor, ProcessingConfig
 
-# Create custom configuration
+# For different CSV formats, customize the configuration
 config = ProcessingConfig(
-    # Column mappings for your CSV
-    email_column="email_address",
-    full_name_column="name", 
-    reg_body_column="registration_body",
-    reg_number_column="registration_number",
-    
-    # Processing options
-    output_format="json",
-    selenium_headless=True,
-    check_registrations=True
+    # If your CSV has different column names:
+    column_names=["email", "name", "linkedin", "body", "number", "state"],
+    email_column="email",
+    full_name_column="name",
+
+    # Processing options:
+    check_registrations=True,  # Set to False to skip web scraping
+    selenium_headless=True,    # Set to False to see browser window
+    output_format="json"
 )
 
 processor = RegistrationProcessor(config=config)

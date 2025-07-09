@@ -21,3 +21,11 @@ If you want to debug locally, you can add this to your `.vscode/launch.json` fil
       "stopOnEntry": false
     },
 ```
+
+To install locally, to test in a different project:
+
+```
+pip install -e .
+```
+
+(from inside this folder)

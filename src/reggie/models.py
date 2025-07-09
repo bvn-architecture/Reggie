@@ -94,16 +94,23 @@ class Person:
 class ProcessingConfig:
     """Configuration for the registration processor."""
 
-    # Column mappings
-    email_column: str = "email"
-    full_name_column: str = "full_name"
-    linked_in_url_column: str = "linked_in_url"
-    reg_body_column: str = "reg_body"
-    reg_number_column: str = "reg_number"
-    state_column: str = "state"  # This is optional, but useful for debugging
+    # Column mappings - defaults match the expected CSV format
+    email_column: str = "Email"
+    full_name_column: str = "Full Name"
+    linked_in_url_column: str = "LinkedIn URL"
+    reg_body_column: str = "State Board Name"
+    reg_number_column: str = "Registration Number"
+    state_column: str = "State Board Code"  # This is optional, but useful for debugging
 
-    # CSV handling options
-    column_names: Optional[List[str]] = None  # Column names for headerless CSVs
+    # CSV handling options - default column names for headerless CSVs
+    column_names: Optional[List[str]] = field(default_factory=lambda: [
+        "Email",
+        "Full Name", 
+        "LinkedIn URL",
+        "State Board Name",
+        "Registration Number",
+        "State Board Code",
+    ])
 
     # Processing options
     check_registrations: bool = True

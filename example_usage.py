@@ -19,50 +19,43 @@ def basic_usage_example():
     """Demonstrate basic usage with default configuration."""
     print("=== Basic Usage Example ===")
 
-    # Initialize with default configuration
+    # Initialize with default configuration (now works with the test CSV format)
     processor = RegistrationProcessor()
 
     # Process a CSV file (using test data)
     csv_path = "tests/test_data/example_input.csv"
 
-    if Path(csv_path).exists():
-        print(f"Processing: {csv_path}")
-        results = processor.process_csv(csv_path)
+    print(
+        f"Processing: {csv_path}\n"
+        "Using default configuration:\n"
+        f"  Column names: {processor.config.column_names}\n"
+        f"  Check registrations: {processor.config.check_registrations}\n"
+    )
 
-        # Save results as JSON
-        processor.save_json(results, "example_output.json")
+    results = processor.process_csv(csv_path)
 
-        print(f"Processed {len(results)} people")
-        print("Results saved to: example_output.json")
-    else:
-        print(f"Test CSV file not found at: {csv_path}")
+    # Save results as JSON
+    processor.save_json(results, "example_output.json")
+
+    print(f"Processed {len(results)} people")
+    print("Results saved to: example_output.json")
 
 
 def custom_config_example():
     """Demonstrate usage with custom configuration."""
     print("\n=== Custom Configuration Example ===")
 
-    # Create custom configuration
+    # Create custom configuration for different CSV format or processing options
     config = ProcessingConfig(
-        # Column mappings for CSV without headers
-        column_names=[
-            "Email",
-            "Full Name",
-            "LinkedIn URL",
-            "State Board Name",
-            "Registration Number",
-            "State Board Code",
-        ],
-        # Column mappings
-        email_column="Email",
-        full_name_column="Full Name",
-        reg_body_column="State Board Name",
-        reg_number_column="Registration Number",
-        # Processing options
+        # If your CSV has different column names, you can specify them:
+        # column_names=["email", "name", "linkedin", "body", "number", "state"],
+        # email_column="email",
+        # full_name_column="name",
+        # Processing options you might want to customize:
+        check_registrations=False,  # Skip web scraping for faster testing
+        selenium_headless=False,  # Show browser window for debugging
+        selenium_implicit_wait=3,  # Faster timeouts
         output_format="json",
-        selenium_headless=True,  # Run browser in background
-        check_registrations=True,  # Actually check registrations online
-        selenium_implicit_wait=5,
     )
 
     processor = RegistrationProcessor(config=config)
@@ -70,6 +63,11 @@ def custom_config_example():
     # Show supported registration bodies
     supported_bodies = processor.get_supported_bodies()
     print(f"Supported registration bodies: {supported_bodies}")
+
+    print("Custom configuration:")
+    print(f"  Check registrations: {config.check_registrations}")
+    print(f"  Selenium headless: {config.selenium_headless}")
+    print(f"  Default column names: {config.column_names}")
 
 
 def main():
@@ -79,7 +77,7 @@ def main():
 
     try:
         basic_usage_example()
-        custom_config_example()
+        # custom_config_example()
 
         print("\n✅ Examples completed successfully!")
 

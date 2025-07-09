@@ -122,3 +122,6 @@ sample_*.csv
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# Specific stuff
+.pypirc
