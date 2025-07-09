@@ -1,4 +1,4 @@
-# Arch Reggie
+# Reggie
 
 A Python package for checking professional registration status across various certification bodies, particularly useful for architecture.
 
