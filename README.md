@@ -3,6 +3,16 @@
 A Python package for checking professional registration status across various certification bodies, particularly useful for architecture.
 
 It can check the NSW and QLD ARBs at the moment, but there's potential to add more in the future.
+```
+✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨
+✨          THIS IS BRAND NEW             ✨
+✨                                        ✨
+✨There could well be all kinds of issues ✨
+✨but if you're here, you're probably     ✨
+✨the kind of person who can help me find ✨
+✨them and fix them!                      ✨
+✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨
+```
 
 ## Installation
 
