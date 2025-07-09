@@ -42,10 +42,10 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/arch-reggie"
+Homepage = "https://github.com/bvn-architecture/Reggie"
 Documentation = "https://arch-reggie.readthedocs.io"
-Repository = "https://github.com/yourusername/arch-reggie"
-Issues = "https://github.com/yourusername/arch-reggie/issues"
+Repository = "https://github.com/bvn-architecture/Reggie"
+Issues = "https://github.com/bvn-architecture/arch-reggie/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/reggie"]
