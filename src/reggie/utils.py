@@ -39,6 +39,13 @@ def normalise_status(status: str) -> str:
     # Convert to lowercase for case-insensitive matching
     status_lower = status.strip().lower()
 
+    # Retired/Non-practicing statuses
+    if any(
+        keyword in status_lower
+        for keyword in ["retired", "non prac", "non-prac", "inactive"]
+    ):
+        return RegistrationStatus.RETIRED.value
+
     # Active/Current statuses
     if any(keyword in status_lower for keyword in ["current", "active", "architect"]):
         # Special case for QLD "Non Prac Architect" which should be retired
@@ -53,13 +60,6 @@ def normalise_status(status: str) -> str:
     # Suspended statuses
     if "suspended" in status_lower:
         return RegistrationStatus.SUSPENDED.value
-
-    # Retired/Non-practicing statuses
-    if any(
-        keyword in status_lower
-        for keyword in ["retired", "non prac", "non-prac", "inactive"]
-    ):
-        return RegistrationStatus.RETIRED.value
 
     # Default for unrecognized statuses
     return RegistrationStatus.ERROR.value
