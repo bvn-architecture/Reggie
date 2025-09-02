@@ -13,6 +13,7 @@ project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root / "src"))
 
 from reggie import RegistrationProcessor, ProcessingConfig
+from reggie.constants import get_default_config
 
 
 def basic_usage_example():
@@ -45,18 +46,30 @@ def custom_config_example():
     """Demonstrate usage with custom configuration."""
     print("\n=== Custom Configuration Example ===")
 
-    # Create custom configuration for different CSV format or processing options
+    # Method 1: Use the convenience function (recommended)
     config = ProcessingConfig(
-        # If your CSV has different column names, you can specify them:
-        # column_names=["email", "name", "linkedin", "body", "number", "state"],
-        # email_column="email",
-        # full_name_column="name",
-        # Processing options you might want to customize:
-        check_registrations=False,  # Skip web scraping for faster testing
-        selenium_headless=False,  # Show browser window for debugging
-        selenium_implicit_wait=3,  # Faster timeouts
-        output_format="json",
+        **get_default_config(
+            check_registrations=False,  # Skip web scraping for faster testing
+            selenium_headless=False,  # Show browser window for debugging
+            selenium_implicit_wait=3,  # Faster timeouts
+            column_names=[
+                "email",
+                "name",
+                "linkedin",
+                "body",
+                "number",
+                "state",
+            ],  # Custom column names
+        )
     )
+
+    # Method 2: Traditional way (still works)
+    # config = ProcessingConfig(
+    #     check_registrations=False,
+    #     selenium_headless=False,
+    #     selenium_implicit_wait=3,
+    #     output_format="json",
+    # )
 
     processor = RegistrationProcessor(config=config)
 

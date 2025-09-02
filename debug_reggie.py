@@ -127,26 +127,13 @@ def debug_csv_processing():
         create_sample_long_format_no_headers(csv_path)
 
     #  For headerless CSV in long format (State Code, Registration Number columns)
+    # Now we can use the convenience function for clean configuration
     config = ProcessingConfig(
-        check_registrations=True,
-        column_names=[
-            "Email",
-            "Full Name",
-            "LinkedIn URL",
-            "State Board Name",
-            "Registration Number",
-            "State Board Code",
-        ],
-        # Configure column names
-        full_name_column="Full Name",
-        email_column="Email",
-        linked_in_url_column="LinkedIn URL",
-        reg_body_column="State Board Name",  # Fixed: changed from "State Code" to "State Board Name"
-        reg_number_column="Registration Number",
-        state_column="State Board Code",  # Added this for the actual state code column
-        # Make browser visible and add debugging options
-        selenium_headless=False,  # Show browser window
-        selenium_implicit_wait=5,  # Reduce wait time for faster debugging
+        **get_default_config(
+            check_registrations=True,
+            selenium_headless=False,  # Show browser window
+            selenium_implicit_wait=5,  # Faster for debugging
+        )
     )
 
     # For debugging, enable actual registration checking to see the verbose output
@@ -204,21 +191,21 @@ def create_sample_csv(csv_path):
     # Also create the long format version for reference WITH headers
     long_format_path = csv_path.replace(".csv", "_long_format.csv")
     long_sample_data = {
-        "Full Name": ["John Test", "John Test", "Jane Test", "Bob Test"],
-        "Email": ["john@test.com", "john@test.com", "jane@test.com", "bob@test.com"],
-        "LinkedIn URL": [
+        "full_name": ["John Test", "John Test", "Jane Test", "Bob Test"],
+        "email": ["john@test.com", "john@test.com", "jane@test.com", "bob@test.com"],
+        "linkedin_url": [
             "https://linkedin.com/in/johntest",
             "https://linkedin.com/in/johntest",
             "https://linkedin.com/in/janetest",
             "https://linkedin.com/in/bobtest",
         ],
-        "Registration Body": [
+        "registration_body": [
             "Board of Architects of Queensland",
             "NSW Architects Registration Board",
             "NSW Architects Registration Board",
             "Board of Architects of Queensland",
         ],
-        "Registration Number": ["12345", "67890", "ABC123", "DEF456"],
+        "reg_number": ["12345", "67890", "ABC123", "DEF456"],
     }
 
     long_df = pd.DataFrame(long_sample_data)

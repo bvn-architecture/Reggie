@@ -8,6 +8,7 @@ from selenium.webdriver.remote.webelement import WebElement
 
 from .base import BaseRegistrationChecker, register_checker
 from ..utils import normalise_status
+from ..constants import ResultKeys, StatusValues
 
 
 @register_checker
@@ -75,13 +76,13 @@ class QLDArchitectsChecker(BaseRegistrationChecker):
                 )
 
                 if not result_cells:
-                    return {"status": "not found"}
+                    return {ResultKeys.STATUS: StatusValues.NOT_FOUND}
 
                 result = self.extract_values(reg_number, result_cells)
 
                 return result
             except NoSuchElementException:
-                return {"status": "not found"}
+                return {ResultKeys.STATUS: StatusValues.NOT_FOUND}
 
         except Exception as e:
             return self.handle_error(reg_number, e)
@@ -114,10 +115,10 @@ class QLDArchitectsChecker(BaseRegistrationChecker):
         normalized_status = normalise_status(status_text)
 
         result = {
-            "status": normalized_status,
-            "name": name,
-            "registration_number": reg_number,
-            "original_status": status_text,
+            ResultKeys.STATUS: normalized_status,
+            ResultKeys.NAME: name,
+            ResultKeys.REG_NUMBER: reg_number,
+            ResultKeys.ORIGINAL_STATUS: status_text,
         }
 
         return result

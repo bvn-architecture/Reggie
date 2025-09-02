@@ -5,19 +5,22 @@ from typing import Dict, Any, Optional, List, Type
 from selenium.webdriver.chrome.webdriver import WebDriver
 
 from ..models import Registration
+from ..constants import ResultKeys, StatusValues
 
 
 # Global registry for checker classes
-_CHECKER_CLASSES: List[Type['BaseRegistrationChecker']] = []
+_CHECKER_CLASSES: List[Type["BaseRegistrationChecker"]] = []
 
 
-def register_checker(checker_class: Type['BaseRegistrationChecker']) -> Type['BaseRegistrationChecker']:
+def register_checker(
+    checker_class: Type["BaseRegistrationChecker"],
+) -> Type["BaseRegistrationChecker"]:
     """
     Decorator to register a checker class.
-    
+
     Args:
         checker_class: The checker class to register
-        
+
     Returns:
         The same checker class (for decorator chaining)
     """
@@ -25,10 +28,10 @@ def register_checker(checker_class: Type['BaseRegistrationChecker']) -> Type['Ba
     return checker_class
 
 
-def get_registered_checkers() -> List[Type['BaseRegistrationChecker']]:
+def get_registered_checkers() -> List[Type["BaseRegistrationChecker"]]:
     """
     Get all registered checker classes.
-    
+
     Returns:
         List of registered checker classes
     """
@@ -41,7 +44,7 @@ class BaseRegistrationChecker(ABC):
     def __init__(self, driver: Optional[WebDriver]):
         """
         Initialize the checker with a WebDriver instance.
-        
+
         Args:
             driver: WebDriver instance. Can be None for getting metadata only.
         """
@@ -103,9 +106,9 @@ class BaseRegistrationChecker(ABC):
             Error status dictionary
         """
         return {
-            "status": "error",
-            "error_message": str(error),
-            "reg_number": reg_number,
+            ResultKeys.STATUS: StatusValues.ERROR,
+            ResultKeys.ERROR_MESSAGE: str(error),
+            ResultKeys.REG_NUMBER: reg_number,
         }
 
 

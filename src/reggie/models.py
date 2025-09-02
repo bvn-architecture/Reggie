@@ -3,6 +3,7 @@
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any, Union
 from enum import Enum
+from .constants import KNOWN_UNCHECKED_REGISTRATION_BODIES, DEFAULT_CONFIG
 
 
 class RegistrationStatus(Enum):
@@ -14,6 +15,7 @@ class RegistrationStatus(Enum):
     RETIRED = "retired"
     NOT_FOUND = "not found"
     UNKNOWN = "unknown"
+    NOT_CHECKED_AUTOMATICALLY = "not checked automatically, check manually"
     ERROR = "error, check manually"
 
 
@@ -31,27 +33,51 @@ class Registration:
     def __post_init__(self):
         """Convert string status to enum if needed."""
         if isinstance(self.reg_status, str):
-            # Find matching enum value
+            # First, try to find matching enum value
             for status_enum in RegistrationStatus:
                 if status_enum.value == self.reg_status:
                     self.reg_status = status_enum
                     return
-            # If no match found, default to ERROR
+
+            # If no match found, check if this is a known but unchecked body
+            if self.reg_body and self.reg_body in KNOWN_UNCHECKED_REGISTRATION_BODIES:
+                self.reg_status = RegistrationStatus.NOT_CHECKED_AUTOMATICALLY
+                # Store the specific body message in additional_data
+                if not self.additional_data:
+                    self.additional_data = {}
+                self.additional_data["status_message"] = (
+                    f"{self.reg_body} is not checked automatically yet, check manually"
+                )
+                return
+
+            # If no match found and not a known unchecked body, default to ERROR
             self.reg_status = RegistrationStatus.ERROR
+
+    @property
+    def status_message(self) -> str:
+        """Get the status message, including dynamic body-specific messages."""
+        if (
+            self.reg_status == RegistrationStatus.NOT_CHECKED_AUTOMATICALLY
+            and self.additional_data
+            and "status_message" in self.additional_data
+        ):
+            return self.additional_data["status_message"]
+        return self.reg_status.value
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
         result = {
             "reg_body": self.reg_body,
             "reg_number": self.reg_number,
-            "reg_status": (
-                self.reg_status.value
-                if isinstance(self.reg_status, RegistrationStatus)
-                else self.reg_status
-            ),
+            "reg_status": self.status_message,  # Use status_message for dynamic messages
         }
         if self.additional_data:
-            result.update(self.additional_data)
+            # Don't include the status_message in additional_data since it's already in reg_status
+            filtered_additional = {
+                k: v for k, v in self.additional_data.items() if k != "status_message"
+            }
+            if filtered_additional:
+                result.update(filtered_additional)
         return result
 
 
@@ -94,32 +120,27 @@ class Person:
 class ProcessingConfig:
     """Configuration for the registration processor."""
 
-    # Column mappings - defaults match the expected CSV format
-    email_column: str = "Email"
-    full_name_column: str = "Full Name"
-    linked_in_url_column: str = "LinkedIn URL"
-    reg_body_column: str = "State Board Name"
-    reg_number_column: str = "Registration Number"
-    state_column: str = "State Board Code"  # This is optional, but useful for debugging
+    # Column mappings - defaults from centralized config
+    email_column: str = DEFAULT_CONFIG["email_column"]
+    full_name_column: str = DEFAULT_CONFIG["full_name_column"]
+    linked_in_url_column: str = DEFAULT_CONFIG["linked_in_url_column"]
+    reg_body_column: str = DEFAULT_CONFIG["reg_body_column"]
+    reg_number_column: str = DEFAULT_CONFIG["reg_number_column"]
+    state_column: str = DEFAULT_CONFIG["state_column"]
 
     # CSV handling options - default column names for headerless CSVs
-    column_names: Optional[List[str]] = field(default_factory=lambda: [
-        "Email",
-        "Full Name", 
-        "LinkedIn URL",
-        "State Board Name",
-        "Registration Number",
-        "State Board Code",
-    ])
+    column_names: Optional[List[str]] = field(
+        default_factory=lambda: DEFAULT_CONFIG["column_names"].copy()
+    )
 
     # Processing options
-    check_registrations: bool = True
-    output_format: str = "json"
-    selenium_headless: bool = True
-    selenium_implicit_wait: int = 10
+    check_registrations: bool = DEFAULT_CONFIG["check_registrations"]
+    output_format: str = DEFAULT_CONFIG["output_format"]
+    selenium_headless: bool = DEFAULT_CONFIG["selenium_headless"]
+    selenium_implicit_wait: int = DEFAULT_CONFIG["selenium_implicit_wait"]
 
     # File paths
-    driver_cache_dir: str = "driver"
+    driver_cache_dir: str = DEFAULT_CONFIG["driver_cache_dir"]
     output_file: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:

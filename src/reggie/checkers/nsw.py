@@ -7,6 +7,7 @@ from selenium.webdriver.remote.webelement import WebElement
 
 from .base import BaseRegistrationChecker, register_checker
 from ..utils import normalise_status
+from ..constants import ResultKeys, StatusValues
 
 
 @register_checker
@@ -73,7 +74,7 @@ class NSWArchitectsChecker(BaseRegistrationChecker):
 
             except NoSuchElementException:
                 # No results found
-                return {"status": "not found"}
+                return {ResultKeys.STATUS: StatusValues.NOT_FOUND}
 
         except Exception as e:
             return self.handle_error(reg_number, e)
@@ -101,10 +102,10 @@ class NSWArchitectsChecker(BaseRegistrationChecker):
         # |name | registration_number | status | suburb | postcode |
         status = cells[2].text.strip().lower()
         result = {
-            "status": normalise_status(status),
-            "name": cells[0].text.strip(),
-            "registration_number": cells[1].text.strip(),
-            "original_status": status,  # for debugging
+            ResultKeys.STATUS: normalise_status(status),
+            ResultKeys.NAME: cells[0].text.strip(),
+            ResultKeys.REG_NUMBER: cells[1].text.strip(),
+            ResultKeys.ORIGINAL_STATUS: status,  # for debugging
         }
 
         return result
