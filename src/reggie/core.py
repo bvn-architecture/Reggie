@@ -16,6 +16,7 @@ from webdriver_manager.core.driver_cache import DriverCacheManager
 
 from .models import Person, Registration, ProcessingConfig
 from .checkers.base import RegistrationCheckerRegistry, get_registered_checkers
+
 # Import checker modules to trigger registration
 from .checkers import nsw, qld
 
@@ -90,7 +91,9 @@ class RegistrationProcessor:
                 self.registry.register(checker_instance)
                 logger.debug(f"Registered checker: {checker_class.__name__}")
             except Exception as e:
-                logger.warning(f"Failed to register checker {checker_class.__name__}: {e}")
+                logger.warning(
+                    f"Failed to register checker {checker_class.__name__}: {e}"
+                )
 
     def process_csv(
         self, file_path: Union[str, Path], encoding: str = "utf-8"
@@ -284,8 +287,10 @@ class RegistrationProcessor:
                 temp_checker = checker_class(driver=None)  # type: ignore
                 bodies.append(temp_checker.registration_body_name)
             except Exception as e:
-                logger.warning(f"Could not get registration body name from {checker_class.__name__}: {e}")
+                logger.warning(
+                    f"Could not get registration body name from {checker_class.__name__}: {e}"
+                )
                 # Continue to next checker rather than failing completely
                 continue
-        
+
         return bodies
