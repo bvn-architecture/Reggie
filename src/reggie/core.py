@@ -168,9 +168,9 @@ class RegistrationProcessor:
         Returns:
             Registration status string
         """
-        reg_body = row["State Board Name"]
-        reg_number = row["Registration Number"]
-        full_name = row["Full Name"]
+        reg_body = row[self.config.reg_body_column]
+        reg_number = row[self.config.reg_number_column]
+        full_name = row[self.config.full_name_column]
 
         # Print verbose output for debugging
         print(f"Checking registration for: {full_name}")
