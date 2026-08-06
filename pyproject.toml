@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "arch-reggie"
-version = "0.1.0"
+version = "0.2.0"
 description = "A package for checking professional registration status across various certification bodies"
 readme = "README.md"
 license = "MIT"
