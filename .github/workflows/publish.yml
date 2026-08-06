@@ -1,0 +1,80 @@
+name: Publish to PyPI
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/arch-reggie/
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[dev]
+          pip install build hatch ruff
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Test
+        run: pytest
+
+      - name: Determine version
+        id: version
+        run: |
+          set -e
+          CURRENT_VERSION=$(hatch version)
+          ALREADY_PUBLISHED=$(
+            curl -sf https://pypi.org/pypi/arch-reggie/json \
+              | python -c "import json, sys; d = json.load(sys.stdin); print('$CURRENT_VERSION' in d['releases'])"
+          )
+          if [ "$ALREADY_PUBLISHED" = "True" ]; then
+            echo "Version $CURRENT_VERSION is already on PyPI, bumping patch"
+            hatch version patch
+          else
+            echo "Version $CURRENT_VERSION is not yet on PyPI, publishing as-is"
+          fi
+          echo "version=$(hatch version)" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and tag version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet -- pyproject.toml; then
+            git add pyproject.toml
+            git commit -m "chore: bump version to ${{ steps.version.outputs.version }} [skip ci]"
+            git push origin HEAD:main
+          fi
+          git tag "v${{ steps.version.outputs.version }}"
+          git push origin "v${{ steps.version.outputs.version }}"
+
+      - name: Build package
+        run: |
+          rm -rf dist build ./*.egg-info
+          python -m build
+
+      - name: Check package
+        run: |
+          pip install twine
+          twine check dist/*
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
