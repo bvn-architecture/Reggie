@@ -12,7 +12,7 @@ from pathlib import Path
 project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root / "src"))
 
-from reggie import RegistrationProcessor, ProcessingConfig
+from reggie import ProcessingConfig, RegistrationProcessor
 from reggie.constants import get_default_config
 
 
@@ -94,7 +94,7 @@ def main():
 
         print("\n✅ Examples completed successfully!")
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 - top-level example entry point, print-and-continue
         print(f"❌ Error running examples: {e}")
         import traceback
 

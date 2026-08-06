@@ -17,9 +17,9 @@ Key areas to explore:
 - Person and Registration models - Data structures
 """
 
+import logging
 import os
 import sys
-import logging
 from pathlib import Path
 
 # Configure logging for verbose output
@@ -31,10 +31,10 @@ logging.basicConfig(
 project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root / "src"))
 
-from reggie import RegistrationProcessor, ProcessingConfig
-from reggie.models import Person, Registration
+from reggie import ProcessingConfig, RegistrationProcessor
 from reggie.checkers.qld import QLDArchitectsChecker
-from reggie.checkers.nsw import NSWArchitectsChecker
+from reggie.constants import get_default_config
+from reggie.models import Person, Registration
 
 
 def debug_single_registration():
@@ -98,7 +98,7 @@ def debug_person_creation():
     # Add registration to person
     person.add_registration(registration)
 
-    print(f"After adding registration:")
+    print("After adding registration:")
     print(f"  Registration count: {person.live_rego_count}")
     print(f"  Registrations list length: {len(person.registrations)}")
 
@@ -145,7 +145,7 @@ def debug_csv_processing():
     # Create processor
     processor = RegistrationProcessor(config=config)
 
-    print(f"Created processor with config")
+    print("Created processor with config")
     print(f"Available checkers: {processor.get_supported_bodies()}")
 
     print(f"Processing CSV: {csv_path}")
@@ -173,7 +173,7 @@ def debug_csv_processing():
 
         return people
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 - top-level debug entry point, print-and-continue
         print(f"Error during processing: {e}")
         import traceback
 
@@ -212,7 +212,7 @@ def create_sample_csv(csv_path):
     long_df.to_csv(long_format_path, index=False)
     print(f"Created long format sample (with headers) at: {long_format_path}")
 
-    print(f"Long format CSV content (for reference):")
+    print("Long format CSV content (for reference):")
     with open(long_format_path, "r") as f:
         lines = f.readlines()[:3]  # Show first 3 lines
         print("".join(lines) + "...")
@@ -310,7 +310,7 @@ if __name__ == "__main__":
         print(
             f"Script completed successfully. Result: {len(result) if result else 0} people processed"
         )
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 - top-level debug entry point, print-and-continue
         print(f"Script failed with error: {e}")
         import traceback
 

@@ -2,9 +2,8 @@
 """Test the updated models with known unchecked registration bodies."""
 
 from src.reggie.models import (
-    Registration,
-    RegistrationStatus,
     KNOWN_UNCHECKED_REGISTRATION_BODIES,
+    Registration,
 )
 
 

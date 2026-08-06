@@ -1,10 +1,9 @@
 """Tests for the registration checker package."""
 
-import pytest
-from reggie.models import Person, Registration, ProcessingConfig, RegistrationStatus
+from reggie.checkers.base import BaseRegistrationChecker, RegistrationCheckerRegistry
 from reggie.core import RegistrationProcessor
+from reggie.models import Person, ProcessingConfig, Registration, RegistrationStatus
 from reggie.utils import normalise_status
-from reggie.checkers.base import RegistrationCheckerRegistry, BaseRegistrationChecker
 
 
 def test_person_creation():

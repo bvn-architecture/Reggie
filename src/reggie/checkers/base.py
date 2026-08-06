@@ -1,20 +1,21 @@
 """Base classes for registration checkers."""
 
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
-from typing import Dict, Any, Optional, List, Type
+from typing import Any
+
 from selenium.webdriver.chrome.webdriver import WebDriver
 
-from ..models import Registration
 from ..constants import ResultKeys, StatusValues
 
-
 # Global registry for checker classes
-_CHECKER_CLASSES: List[Type["BaseRegistrationChecker"]] = []
+_CHECKER_CLASSES: list[type[BaseRegistrationChecker]] = []
 
 
 def register_checker(
-    checker_class: Type["BaseRegistrationChecker"],
-) -> Type["BaseRegistrationChecker"]:
+    checker_class: type[BaseRegistrationChecker],
+) -> type[BaseRegistrationChecker]:
     """
     Decorator to register a checker class.
 
@@ -28,7 +29,7 @@ def register_checker(
     return checker_class
 
 
-def get_registered_checkers() -> List[Type["BaseRegistrationChecker"]]:
+def get_registered_checkers() -> list[type[BaseRegistrationChecker]]:
     """
     Get all registered checker classes.
 
@@ -41,7 +42,7 @@ def get_registered_checkers() -> List[Type["BaseRegistrationChecker"]]:
 class BaseRegistrationChecker(ABC):
     """Abstract base class for registration checkers."""
 
-    def __init__(self, driver: Optional[WebDriver]):
+    def __init__(self, driver: WebDriver | None):
         """
         Initialize the checker with a WebDriver instance.
 
@@ -54,10 +55,9 @@ class BaseRegistrationChecker(ABC):
     @abstractmethod
     def registration_body_name(self) -> str:
         """Return the name of the registration body this checker handles."""
-        pass
 
     @abstractmethod
-    def check_registration(self, reg_number: str, **kwargs) -> Dict[str, Any]:
+    def check_registration(self, reg_number: str, **kwargs) -> dict[str, Any]:
         """
         Check registration status for the given registration number.
 
@@ -68,7 +68,6 @@ class BaseRegistrationChecker(ABC):
         Returns:
             Dictionary with registration details including status
         """
-        pass
 
     # def create_registration(
     #     self, reg_body: str, reg_number: str, status_data: Dict[str, Any]
@@ -94,7 +93,7 @@ class BaseRegistrationChecker(ABC):
     #         additional_data=additional_data if additional_data else None,
     #     )
 
-    def handle_error(self, reg_number: str, error: Exception) -> Dict[str, Any]:
+    def handle_error(self, reg_number: str, error: Exception) -> dict[str, Any]:
         """
         Handle errors during registration checking.
 
@@ -117,13 +116,13 @@ class RegistrationCheckerRegistry:
 
     def __init__(self):
         """Initialize the registry."""
-        self._checkers: Dict[str, BaseRegistrationChecker] = {}
+        self._checkers: dict[str, BaseRegistrationChecker] = {}
 
     def register(self, checker: BaseRegistrationChecker) -> None:
         """Register a checker for a registration body."""
         self._checkers[checker.registration_body_name] = checker
 
-    def get_checker(self, registration_body: str) -> Optional[BaseRegistrationChecker]:
+    def get_checker(self, registration_body: str) -> BaseRegistrationChecker | None:
         """Get a checker for the specified registration body."""
         return self._checkers.get(registration_body)
 

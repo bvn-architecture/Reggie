@@ -1,9 +1,12 @@
 """Data models for the registration checker package."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any, Union
 from enum import Enum
-from .constants import KNOWN_UNCHECKED_REGISTRATION_BODIES, DEFAULT_CONFIG
+from typing import Any
+
+from .constants import DEFAULT_CONFIG, KNOWN_UNCHECKED_REGISTRATION_BODIES
 
 
 class RegistrationStatus(Enum):
@@ -23,12 +26,10 @@ class RegistrationStatus(Enum):
 class Registration:
     """Represents a professional registration."""
 
-    reg_body: Optional[str]
-    reg_number: Optional[str]
-    reg_status: Union[
-        str, RegistrationStatus
-    ]  # Accept string, will convert to enum in __post_init__
-    additional_data: Optional[Dict[str, Any]] = None
+    reg_body: str | None
+    reg_number: str | None
+    reg_status: str | RegistrationStatus  # Accept string, will convert to enum in __post_init__
+    additional_data: dict[str, Any] | None = None
 
     def __post_init__(self):
         """Convert string status to enum if needed."""
@@ -64,7 +65,7 @@ class Registration:
             return self.additional_data["status_message"]
         return self.reg_status.value
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
         result = {
             "reg_body": self.reg_body,
@@ -87,8 +88,8 @@ class Person:
 
     full_name: str
     email: str
-    linked_in_url: Optional[str] = None
-    registrations: List[Registration] = field(default_factory=list)
+    linked_in_url: str | None = None
+    registrations: list[Registration] = field(default_factory=list)
 
     @property
     def live_rego_count(self) -> int:
@@ -105,7 +106,7 @@ class Person:
         """Add a registration to this person."""
         self.registrations.append(registration)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
         return {
             "full_name": self.full_name,
@@ -129,7 +130,7 @@ class ProcessingConfig:
     state_column: str = DEFAULT_CONFIG["state_column"]
 
     # CSV handling options - default column names for headerless CSVs
-    column_names: Optional[List[str]] = field(
+    column_names: list[str] | None = field(
         default_factory=lambda: DEFAULT_CONFIG["column_names"].copy()
     )
 
@@ -141,9 +142,9 @@ class ProcessingConfig:
 
     # File paths
     driver_cache_dir: str = DEFAULT_CONFIG["driver_cache_dir"]
-    output_file: Optional[str] = None
+    output_file: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert config to dictionary."""
         return {
             "columns": {

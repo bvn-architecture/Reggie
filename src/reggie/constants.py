@@ -1,6 +1,8 @@
 """Constants and default configurations for the registration checker package."""
 
-from typing import List, Dict, Any
+from __future__ import annotations
+
+from typing import Any
 
 # Known registration bodies that are not yet automatically checked
 KNOWN_UNCHECKED_REGISTRATION_BODIES = {
@@ -9,7 +11,6 @@ KNOWN_UNCHECKED_REGISTRATION_BODIES = {
     "Western Australian Architects Board",
     "Tasmanian Architects Board",
     "Northern Territory Architects Registration Board",
-    "ACT Architects Registration Board",
     "Engineers Australia",
     "Australian Institute of Building Surveyors",
     # Add more known bodies here as needed
@@ -62,7 +63,7 @@ class StatusValues:
     CURRENT_AND_ACTIVE = "current and active"
 
 
-def get_default_config(**overrides) -> Dict[str, Any]:
+def get_default_config(**overrides) -> dict[str, Any]:
     """
     Get the default configuration with optional overrides.
 

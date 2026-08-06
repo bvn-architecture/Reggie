@@ -1,25 +1,23 @@
 """Core registration processing functionality."""
 
+from __future__ import annotations
+
 import json
 import logging
 from pathlib import Path
-from typing import List, Optional, Union
+
 import pandas as pd
 from numpy import nan as np_nan
 from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.webdriver import WebDriver
-from selenium.common.exceptions import WebDriverException
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.driver_cache import DriverCacheManager
 
-
-from .models import Person, Registration, ProcessingConfig
-from .checkers.base import RegistrationCheckerRegistry, get_registered_checkers
-
 # Import checker modules to trigger registration
-from .checkers import nsw, qld
-
+from .checkers.base import RegistrationCheckerRegistry, get_registered_checkers
+from .models import Person, ProcessingConfig, Registration
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +25,7 @@ logger = logging.getLogger(__name__)
 class RegistrationProcessor:
     """Main class for processing registration data."""
 
-    def __init__(self, config: Optional[ProcessingConfig] = None):
+    def __init__(self, config: ProcessingConfig | None = None):
         """
         Initialize the registration processor.
 
@@ -35,14 +33,13 @@ class RegistrationProcessor:
             config: Processing configuration. If None, uses defaults.
         """
         self.config = config or ProcessingConfig()
-        self.driver: Optional[WebDriver] = None
+        self.driver: WebDriver | None = None
         self.registry = RegistrationCheckerRegistry()
         self._setup_checkers()
 
     def _setup_checkers(self) -> None:
         """Set up the registration checkers."""
         # Note: Checkers will be registered when driver is created
-        pass
 
     def _create_driver(self) -> WebDriver:
         """Create and configure a WebDriver instance."""
@@ -77,7 +74,7 @@ class RegistrationProcessor:
                 return driver
             except WebDriverException as wde:
                 logger.error(f"Chrome driver failed: {wde}")
-                raise wde
+                raise
 
     def _register_checkers(self) -> None:
         """Register all available checkers with the driver."""
@@ -90,14 +87,14 @@ class RegistrationProcessor:
                 checker_instance = checker_class(self.driver)
                 self.registry.register(checker_instance)
                 logger.debug(f"Registered checker: {checker_class.__name__}")
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001 - one bad checker shouldn't stop the rest registering
                 logger.warning(
                     f"Failed to register checker {checker_class.__name__}: {e}"
                 )
 
     def process_csv(
-        self, file_path: Union[str, Path], encoding: str = "utf-8"
-    ) -> List[Person]:
+        self, file_path: str | Path, encoding: str = "utf-8"
+    ) -> list[Person]:
         """
         Process a CSV file containing registration data.
 
@@ -205,15 +202,15 @@ class RegistrationProcessor:
             status = result.get("status", "unknown")
             print(f"  Result: {full_name}: {status} \n", row)
             return status
-        except Exception as e:
-            status = f"error: {str(e)}"
+        except Exception as e:  # noqa: BLE001 - one bad row shouldn't stop the rest of the batch
+            status = f"error: {e!s}"
             logger.error(
                 f"Error checking registration {reg_number} with {reg_body}: {e}"
             )
             print(f"  Result: {status}")
             return status
 
-    def _dataframe_to_people(self, df: pd.DataFrame) -> List[Person]:
+    def _dataframe_to_people(self, df: pd.DataFrame) -> list[Person]:
         """
         Convert DataFrame to list of Person objects.
 
@@ -262,7 +259,7 @@ class RegistrationProcessor:
 
         return people
 
-    def save_json(self, people: List[Person], output_path: Union[str, Path]) -> None:
+    def save_json(self, people: list[Person], output_path: str | Path) -> None:
         """
         Save people data to JSON file.
 
@@ -277,7 +274,7 @@ class RegistrationProcessor:
 
         logger.info(f"Saved {len(people)} people to {output_path}")
 
-    def get_supported_bodies(self) -> List[str]:
+    def get_supported_bodies(self) -> list[str]:
         """Get list of supported registration bodies."""
         bodies = []
         for checker_class in get_registered_checkers():
@@ -286,7 +283,7 @@ class RegistrationProcessor:
                 # We only need the name, not actual web driver functionality
                 temp_checker = checker_class(driver=None)  # type: ignore
                 bodies.append(temp_checker.registration_body_name)
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001 - one bad checker shouldn't stop enumeration
                 logger.warning(
                     f"Could not get registration body name from {checker_class.__name__}: {e}"
                 )

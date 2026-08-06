@@ -1,13 +1,16 @@
 """NSW Architects Registration Board checker."""
 
-from typing import Dict, Any, List
+from __future__ import annotations
+
+from typing import Any
+
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
-from .base import BaseRegistrationChecker, register_checker
-from ..utils import normalise_status
 from ..constants import ResultKeys, StatusValues
+from ..utils import normalise_status
+from .base import BaseRegistrationChecker, register_checker
 
 
 @register_checker
@@ -19,7 +22,7 @@ class NSWArchitectsChecker(BaseRegistrationChecker):
         """Return the name of the registration body."""
         return "NSW Architects Registration Board"
 
-    def check_registration(self, reg_number: str, **kwargs) -> Dict[str, Any]:
+    def check_registration(self, reg_number: str, **kwargs) -> dict[str, Any]:
         """
         Check registration status with NSW Architects Registration Board.
 
@@ -76,10 +79,10 @@ class NSWArchitectsChecker(BaseRegistrationChecker):
                 # No results found
                 return {ResultKeys.STATUS: StatusValues.NOT_FOUND}
 
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 - checker must never crash a batch run
             return self.handle_error(reg_number, e)
 
-    def extract_values(self, cells: List[WebElement]) -> Dict[str, Any]:
+    def extract_values(self, cells: list[WebElement]) -> dict[str, Any]:
         """
         Extract registration values from table cells.
 
