@@ -6,11 +6,11 @@ from typing import Any
 
 # Known registration bodies that are not yet automatically checked
 KNOWN_UNCHECKED_REGISTRATION_BODIES = {
-    "Victorian Architects Registration Board",
-    "South Australian Architects Board",
-    "Western Australian Architects Board",
-    "Tasmanian Architects Board",
-    "Northern Territory Architects Registration Board",
+    "Architects Registration Board of Victoria",
+    "Architectural Practice Board of South Australia",
+    "Architect Board of Western Australia",
+    "Board of Architects of Tasmania",
+    "Northern Territory Architects Board",
     "Engineers Australia",
     "Australian Institute of Building Surveyors",
     # Add more known bodies here as needed

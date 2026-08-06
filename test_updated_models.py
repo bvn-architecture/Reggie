@@ -11,7 +11,7 @@ def test_known_unchecked_body():
     """Test that known unchecked bodies get the correct status and message."""
     # Test with a known unchecked body
     reg = Registration(
-        reg_body="Victorian Architects Registration Board",
+        reg_body="Architects Registration Board of Victoria",
         reg_number="12345",
         reg_status="some unknown status",  # This should trigger the unchecked body logic
     )
