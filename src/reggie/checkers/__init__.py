@@ -1,6 +1,6 @@
 """Checker package initialization."""
 
-from .base import BaseRegistrationChecker, RegistrationCheckerRegistry, register_checker, get_registered_checkers
+from .act import ACTArchitectsChecker
 from .nsw import NSWArchitectsChecker
 from .qld import QLDArchitectsChecker
 
